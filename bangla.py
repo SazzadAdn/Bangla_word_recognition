@@ -8,7 +8,7 @@ st.title('Bangla word recognition')
 
 # Function to perform OCR on the selected image
 def perform_ocr(image):
-    text = pytesseract.image_to_string(image, lang='ben')
+    text = pytesseract.image_to_string(image, lang='por')
     return text
 
 uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
