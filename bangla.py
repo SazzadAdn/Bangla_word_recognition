@@ -1,38 +1,42 @@
 import streamlit as st
 from PIL import Image
 import pytesseract
-#import functions.functions as fc
+import io
+import numpy as np
 
-class OCR:
+st.title('Bangla word recognition')
 
-    def __init__(self):
-        st.set_page_config(page_title="Bangla Word Recognition")
-        self.text = ""
-        self.analyze_text = False
+# Function to perform OCR on the selected image
+def perform_ocr(image):
+    text = pytesseract.image_to_string(image, lang='ben')
+    return text
 
-    def initial(self):
-        st.title("Bangla Word Recognition")
-        st.write("Optical Character Recognition (OCR) implemented with Python")
-        uploaded_image = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
+uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+use_camera = st.checkbox("Use Camera Input")
 
-        if uploaded_image:
-            image = Image.open(uploaded_image)
-            st.image(image, caption='Uploaded Image', use_column_width=True)
-            self.text = self.extract_text(image)
-            st.write('## Recognized Text:')
-            st.write(self.text)
-            
-           # self.analyze_text = st.checkbox("Analyze Text")
-           # if self.analyze_text:
-           #     self.show_analysis()
+if use_camera:
+    camera_image = st.camera_input("Take a picture")
+    if camera_image is not None:
+        # Convert camera image to bytes
+        image_bytes = camera_image.getvalue()
 
-    def extract_text(self, image):
-        text = pytesseract.image_to_string(image, lang="ben")
-        return text
-    
-    def show_analysis(self):
-        # Your analysis code here
-        pass
+        # Load bytes data into PIL Image
+        image = Image.open(io.BytesIO(image_bytes))
 
-ocr = OCR()
-ocr.initial()
+        # Perform OCR on the camera image
+        st.image(image, caption='Camera Image', use_column_width=True)
+        text = perform_ocr(image)
+        st.write('## Recognized Bangla word:')
+        st.write(text)
+elif uploaded_image is not None:
+    # Display uploaded image
+    image = Image.open(uploaded_image)
+    st.image(image, caption='Uploaded Image', use_column_width=True)
+
+    # Perform OCR on the image
+    text = perform_ocr(image)
+    st.write('## Recognized Bangla word:')
+    st.write(text)
+# Add footer
+st.markdown("---")
+st.write("Developed by Adnan")
